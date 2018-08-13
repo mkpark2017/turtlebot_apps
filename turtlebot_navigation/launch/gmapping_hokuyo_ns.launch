@@ -1,0 +1,30 @@
+<!-- hello -->
+
+<launch>
+  <arg name="ns" default="turtlebot_2" />
+  <group ns="$(arg ns)">
+    <!-- laser sensor -->
+    <arg name="3d_sensor" default="hokuyo"/>
+    <node name="urg_node" pkg="urg_node" type="urg_node" output="screen">
+      <param name="ip_address" value="192.168.1.10"/>
+      <param name="frame_id" value="$(arg ns)/laser"/>
+      <param name="calibrate_time" value="true"/>
+      <param name="publish_intensity" value="false"/>
+      <param name="publish_multiecho" value="false"/>
+    </node>
+
+    <node pkg="tf" type="static_transform_publisher" name="base_to_laser" args="0.1 0.0 0.18 3.141592 0 0 $(arg ns)/base_link $(arg ns)/laser 100"/>
+    <node name="laser_filter" pkg="turtlebot_navigation" type="laser_footprint_filter" />
+
+    <!-- Gmapping -->
+    <arg name="custom_gmapping_launch_file" default="$(find turtlebot_navigation)/launch/includes/gmapping/$(arg 3d_sensor)_gmapping_ns.launch.xml"/>
+    <include file="$(arg custom_gmapping_launch_file)">
+      <arg name="ns" value="$(arg ns)"/>
+    </include>
+
+    <!-- Move base -->
+    <include file="$(find turtlebot_navigation)/launch/includes/move_base_ns.launch.xml">
+      <arg name="ns" value="$(arg ns)"/>
+    </include>
+  </group>
+</launch>

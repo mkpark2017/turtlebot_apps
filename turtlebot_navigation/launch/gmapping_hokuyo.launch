@@ -2,9 +2,18 @@
 
 <launch>
   <!-- laser sensor -->
-  <arg name="3d_sensor" default="$(env TURTLEBOT_3D_SENSOR)"/>
-  <include file="$(find hokuyo_node)/hokuyo_test.launch" />
-  <node pkg="tf" type="static_transform_publisher" name="base_to_laser" args="0.1 0.0 0.18 0 0.0 0.0 base_link laser 100"/>
+  <arg name="3d_sensor" default="hokuyo"/>
+  <node name="urg_node" pkg="urg_node" type="urg_node" output="screen">
+    <param name="ip_address" value="192.168.1.10"/>
+    <param name="frame_id" value="laser"/>
+    <param name="calibrate_time" value="true"/>
+    <param name="publish_intensity" value="false"/>
+    <param name="publish_multiecho" value="false"/>
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="base_to_laser" args="0.1 0.0 0.18 3.141592 0 0 base_link laser 100"/>
+  <node name="laser_filter" pkg="turtlebot_navigation" type="laser_footprint_filter" />
+
   <!-- Gmapping -->
   <arg name="custom_gmapping_launch_file" default="$(find turtlebot_navigation)/launch/includes/gmapping/$(arg 3d_sensor)_gmapping.launch.xml"/>
   <include file="$(arg custom_gmapping_launch_file)"/>
