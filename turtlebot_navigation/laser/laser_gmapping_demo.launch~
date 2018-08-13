@@ -1,8 +1,7 @@
 <!-- hello -->
 
 <launch>
-  <include file="$(find hokuyo_node)/hokuyo_test.launch" />
-  <node pkg="tf" type="static_transform_publisher" name="base_to_laser" args="0.1 0.0 0.18 0 0.0 0.0 base_link laser 100"/>
+
   <!-- Run self-filter -->
   <node name="laser_filter"  pkg="turtlebot_navigation" type="laser_footprint_filter" />
  
